@@ -11,6 +11,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    name: String,
+    profile_image: String,
+    age: Number,
+    posts: [{type: Schema.Types.ObjectId, ref: "Review"}]
   },
   {
     timeseries: true,

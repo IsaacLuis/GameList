@@ -10,6 +10,7 @@ const saltRounds = 10;
 const isAuthenticated = require('../middleware/isAuthenticated')
 
 
+
 router.post("/signup", (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).json({ message: "please fill out all fields" });
@@ -25,16 +26,17 @@ router.post("/signup", (req, res, next) => {
 
         User.create({
           password: hashedPass,
-          email: req.body.email
+          email: req.body.email,
+          name: req.body.name
         })
           .then((createdUser) => {
-            const payload = { _id: createdUser._id, email: createdUser.email };
+            const payload = { _id: createdUser._id, email: createdUser.email, name: createdUser.name };
 
             const token = jwt.sign(payload, process.env.SECRET, {
               algorithm: "HS256",
               expiresIn: "24hr",
             });
-            res.json({ token: token, id: createdUser._id });
+            res.json({ token: token, _id: createdUser._id, message: `Welcome ${createdUser.name}`  });
           })
           .catch((err) => {
             res.status(400).json(err.message);
@@ -63,13 +65,13 @@ router.post("/login", (req, res, next) => {
       );
 
       if (doesMatch) {
-        const payload = { _id: foundUser._id, username: foundUser.username, email: foundUser.email };
+        const payload = { _id: foundUser._id, email: foundUser.email, name: foundUser.name, profile_image: foundUser.profile_image, city: foundUser.city, age: foundUser.age, countries_visited: foundUser.countries_visited, posts: foundUser.posts };
 
         const token = jwt.sign(payload, process.env.SECRET, {
           algorithm: "HS256",
           expiresIn: "24hr",
         });
-        res.json({ token: token, id: foundUser._id, message: `Welcome ${foundUser.email}` });
+        res.json({ _id: foundUser._id, token: token, message: `Welcome ${foundUser.name}` });
       } else {
         return res.status(402).json({ message: "Email or Password is incorrect" });
       }
@@ -79,9 +81,23 @@ router.post("/login", (req, res, next) => {
     });
 });
 
-router.get("/verify", isAuthenticated, (req, res) => {
-  return res.status(200).json(req.user);
-});
 
+router.get("/verify", isAuthenticated, (req, res) => {
+
+  User.findOne({_id: req.user._id})
+   /*.populate('countries_visited')*/
+  /*.populate('posts')*/
+  .then((foundUser) => {
+
+    const payload = { ...foundUser };
+    delete payload._doc.password;
+
+    res.status(200).json(payload._doc);
+    
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+});
 
 module.exports = router;

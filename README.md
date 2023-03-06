@@ -1,1 +1,1 @@
-# GameList
+# Server GameList

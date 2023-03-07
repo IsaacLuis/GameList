@@ -1,23 +1,37 @@
 var express = require("express");
 var router = express.Router();
 
-// Models to populate 
+const User = require('../models/User.model')
+const Games = require('../models/Games.model')
 
-// router.get('/', (req, res, next) => {
-//     Post.find()
-//     /*  
-//     .populate('contributor')
-//       .populate('country')
-//       */
-//       .sort({createdAt: -1})
-//       .then((foundGame) => {
-//           res.json(foundGame)
-//       })
-//       .catch((err) => {
-//           console.log(err)
-//       })
-//   });
+// games_pick
+router.post('/add-wish/:userId', (req, res, next) => {
 
 
 
-  module.exports = router;
+
+  User.findByIdAndUpdate(req.params.userId, {
+    $addToSet: { games_pick: req.body.game }
+  },
+    { new: true })
+    .then((updatedUser) => {
+      return updatedUser.populate('games_pick')
+    })
+    // .then((populated) => {
+    //     return populated.populate('posts')
+    // })
+    .then((second) => {
+      res.json(second)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+
+})
+
+
+
+
+
+module.exports = router;

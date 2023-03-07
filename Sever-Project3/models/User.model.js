@@ -14,6 +14,7 @@ const userSchema = new Schema(
     name: String,
     profile_image: String,
     age: Number,
+    games_pick: [],
     posts: [{type: Schema.Types.ObjectId, ref: "Review"}]
   },
   {

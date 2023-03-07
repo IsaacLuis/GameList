@@ -1,14 +1,16 @@
 const { Schema, model } = require("mongoose");
 
-const countrySchema = new Schema(
+const gamesSchema = new Schema(
   {
     name: String,
-    capital: String,
-    alpha2Code: String,
-    flag: String,
-    region: String,
+    id: String,
+    background_image: String,
+    released: Date,
+    genres: Array,
+    platforms: [Object],
     languages: [String],
-    results: [Object]
+    metacritic: Number,
+    
   },
   {
     timeseries: true,
@@ -16,6 +18,6 @@ const countrySchema = new Schema(
   }
 );
 
-const Country = model("Country", countrySchema);
+const Country = model("Games", gamesSchema);
 
 module.exports = Country;

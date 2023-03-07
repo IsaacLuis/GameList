@@ -2,9 +2,9 @@ var express = require("express");
 var router = express.Router();
 
 const User = require('../models/User.model')
-const Games = require('../models/Games.model')
 
 // games_pick
+
 router.post('/add-wish/:userId', (req, res, next) => {
 
 

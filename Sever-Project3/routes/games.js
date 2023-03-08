@@ -34,6 +34,38 @@ router.post('/add-wish/:userId', (req, res, next) => {
 
 
 
+router.post('/games/delete/add-wish/:userId', (req, res, next) => {
+  const gameId = req.body.game;
+  if (typeof gameId !== 'string') {
+    res.status(400).json({ message: "Invalid game ID" });
+    return;
+  }
+  User.findById(req.params.userId)
+    .populate('games_pick')
+    .then((foundUser) => {
+      if (foundUser.games_pick.includes(gameId)) {
+        const updatedGames = foundUser.games_pick.filter((game) => game !== gameId);
+        foundUser.games_pick = updatedGames;
+        foundUser.save()
+          .then((savedUser) => {
+            res.json(savedUser);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({ message: "Internal server error" });
+          })
+      } else {
+        res.json({ message: "Game not found in wishlist" });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: "Internal server error" });
+    });
+});
+
+
+
 
 
 module.exports = router;

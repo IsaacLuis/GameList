@@ -12,11 +12,13 @@ router.post('/add-wish/:userId', (req, res, next) => {
 
   User.findByIdAndUpdate(req.params.userId, {
     $addToSet: { games_pick: req.body.game }
+    
   },
     { new: true })
     .then((updatedUser) => {
       return updatedUser.populate('games_pick')
     })
+    
     // .then((populated) => {
     //     return populated.populate('posts')
     // })
